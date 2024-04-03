@@ -4,23 +4,25 @@ create TABLE admins (
     userPassword   TEXT NOT NULL    
 );
 
-create TABLE trainers (
-    trainerID       SERIAL PRIMARY KEY, 
-    username        TEXT NOT NULL,
-    userPassword    TEXT NOT NULL,
-    foreign key (memberID) references members
-        on delete set null
-);
-
 create TABLE members (
     memberID        SERIAL PRIMARY KEY, 
     username        TEXT NOT NULL, 
     userPassword    TEXT NOT NULL
 );
 
+create TABLE trainers (
+    trainerID       SERIAL PRIMARY KEY, 
+    username        TEXT NOT NULL,
+    userPassword    TEXT NOT NULL,
+    memberID        INT,
+    foreign key (memberID) references members
+        on delete set null
+);
+
 create TABLE medicationList (
     medicationID        SERIAL PRIMARY KEY,
     nameOfMedication    TEXT NOT NULL,
+    memberID            INT, 
     foreign key (memberID) references members
         on delete set null     
 );
@@ -31,6 +33,8 @@ create TABLE memberInfo (
     dateOfBirth     DATE,
     memberWeight    FLOAT,
     memberHeight    FLOAT, 
+    medicationID    INT, 
+    memberID        INT, 
     foreign key (medicationID) references medicationList  
         on delete set null, 
     foreign key (memberID) references members
@@ -41,15 +45,17 @@ create TABLE memberGoals (
     checkIn         DATE,
     currentWeight   FLOAT,
     goalWeight      FLOAT,
+    memberID        INT,
     foreign key (memberID) references members
         on delete set null
 );
 
-create TABLE routine (
+create TABLE excersiseRoutine (
     dateOfExercise  DATE,
     formOfCardio    TEXT NOT NULL, 
     nameOfLift      TEXT NOT NULL, 
     caloriesBurned  FLOAT,
+    memberID        INT, 
     foreign key (memberID) references members
         on delete set null
 );
@@ -59,6 +65,7 @@ create TABLE memberProgression (
     nameOfLift      TEXT NOT NULL, 
     currentWeight   FLOAT,
     originalWeight  FLOAT,
+    memberID        INT,
     foreign key (memberID) references members
         on delete set null
 );
@@ -67,35 +74,36 @@ create table rooms (
     roomID     SERIAL  PRIMARY KEY, 
     roomType   TEXT NOT NULL,
     dateBooked DATE, 
-    startTime  TIME NOT NULL, 
-    endTime    TIME, NOT NULL 
+    startTime  TIME, 
+    endTime    TIME 
 );
 
 create table fitnessEquipment(
-    equipmentID     SERIAL PRIMARY KEY
+    equipmentID     SERIAL PRIMARY KEY,
     lastCheckUp     DATE, 
     nextCheckUp     DATE, 
     notableIssues   TEXT
 );
 
 create table membersEnrolled(
-    membersEnrolledID   SERIAL PRIMARY KEY
+    membersEnrolledID   SERIAL PRIMARY KEY,
     memberFirstName     TEXT NOT NULL, 
     memberLastName      TEXT NOT NULL, 
-    foreign key (classID) references class
-		on delete set null,
+    memberID            INT,
     foreign key (memberID) references members
 		on delete set null
 );
 
 create table class(
-    classID     SERIAL PRIMARY KEY,
-    className   TEXT NOT NULL,
-    description TEXT, 
-    dateOfClass DATE, 
-    startTime   TIME, 
-    endTime     TIME, 
-    duration    INT, 
+    classID           SERIAL PRIMARY KEY,
+    className         TEXT NOT NULL,
+    description       TEXT, 
+    dateOfClass       DATE, 
+    startTime         TIME, 
+    endTime           TIME, 
+    duration          INT, 
+    trainerID         INT, 
+    membersEnrolledID INT,
     foreign key (trainerID) references trainers
 		on delete set null,
     foreign key (membersEnrolledID) references membersEnrolled
@@ -105,7 +113,9 @@ create table class(
 create table privateSession(
     sessionDate     DATE,
     sessionTime     TIME, 
-    duration        INT
+    duration        INT,
+    trainerID       INT, 
+    memberID        INT,
     foreign key (trainerID) references trainers
 		on delete set null,
     foreign key (memberID) references members
@@ -116,6 +126,7 @@ create table trainerSchedule(
     dateOfAvailability  DATE, 
     startTime           TIME, 
     endTime             TIME,
+    trainerID           INT, 
     foreign key (trainerID) references trainers
 		on delete set null  
 );
@@ -125,6 +136,7 @@ create table paymentProcess(
     memberLastName      TEXT NOT NULL, 
     paymentAmount       FLOAT, 
     billingDate         DATE,
+    memberID            INT,
     foreign key (memberID) references members
 		on delete set null
 );
