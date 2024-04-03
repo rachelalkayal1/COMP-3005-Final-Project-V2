@@ -46,7 +46,7 @@ VALUES
     ('2024-03-01', 60.0, 55, 3),
     ('2024-03-01', 85.0, 80, 4);
 
--- Sample data for excersiseRoutine table
+-- Sample data for exerciseRoutine table
 INSERT INTO exerciseRoutine (dateOfExercise, formOfCardio, nameOfLift, caloriesBurned, memberID)
 VALUES 
     ('2024-03-01', 'Running', 'Squats', 200, 1),
