@@ -50,7 +50,7 @@ create TABLE memberGoals (
         on delete set null
 );
 
-create TABLE excersiseRoutine (
+create TABLE exerciseRoutine (
     dateOfExercise  DATE,
     formOfCardio    TEXT NOT NULL, 
     nameOfLift      TEXT NOT NULL, 
@@ -80,21 +80,13 @@ create table rooms (
 
 create table fitnessEquipment(
     equipmentID     SERIAL PRIMARY KEY,
+    nameOfMachine   TEXT NOT NULL,
     lastCheckUp     DATE, 
     nextCheckUp     DATE, 
     notableIssues   TEXT
 );
 
-create table membersEnrolled(
-    membersEnrolledID   SERIAL PRIMARY KEY,
-    memberFirstName     TEXT NOT NULL, 
-    memberLastName      TEXT NOT NULL, 
-    memberID            INT,
-    foreign key (memberID) references members
-		on delete set null
-);
-
-create table class(
+CREATE TABLE class (
     classID           SERIAL PRIMARY KEY,
     className         TEXT NOT NULL,
     description       TEXT, 
@@ -103,12 +95,22 @@ create table class(
     endTime           TIME, 
     duration          INT, 
     trainerID         INT, 
-    membersEnrolledID INT,
     foreign key (trainerID) references trainers
-		on delete set null,
-    foreign key (membersEnrolledID) references membersEnrolled
-		on delete set null
+        on delete set null
 );
+
+CREATE TABLE classMembers (
+    classMemberID     SERIAL PRIMARY KEY, 
+    memberFirstName   TEXT NOT NULL,
+    memberLastName    TEXT NOT NULL,
+    classID           INT,
+    memberID          INT,
+    foreign key (classID) references class 
+        on delete cascade,
+    foreign key (memberID) references members 
+        on delete cascade
+);
+
 
 create table privateSession(
     sessionDate     DATE,
