@@ -1,0 +1,28 @@
+doctype html
+html(lang="en")
+    head 
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title TITLE OF PROJECT 
+        //- style 
+            //- include login.css
+
+        body 
+            h2 Welcome to health 
+            div(id="login")
+            legend Enter your Login Information 
+            input(type="text" id="username" placeholder="Enter Username")
+            br
+            br
+            input(type="password" id="password" placeholder="Enter Password")
+            br
+            p(id="userError")
+            p(id="passError")
+            p(id="wrongpass")
+            button(type='submit', id="login", onclick='loginInfo()') Login!
+
+            button(type='button', id='newUser', onclick='signupPage()') Create New User
+        script 
+            include login.js
+            //- include signup.js
