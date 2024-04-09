@@ -59,7 +59,8 @@ function create(){
     let height = document.getElementById('height').value;
     let weight = document.getElementById('weight').value;
     let medication = document.getElementById('medicine').value;
-    let isTrainer = document.getElementById
+    let isTrainer = document.getElementById('isTrainer').value;
+    let isAdmin = document.getElementById('isAdmin').value;
 
     if(!firstName){
         document.getElementById('firstNameError').innerHTML = `<p id="firstNameError">Please enter your first name`; 

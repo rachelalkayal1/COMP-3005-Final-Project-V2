@@ -73,6 +73,12 @@ async function addNewMember (req, res){
     let weight = req.body.weight; 
     let dob = req.body.dob;
     let medication = req.body.medication
+    let isTrainer = req.body.isTrainer;
+    let isAdmin = req.body.isAdmin;
+
+    if(isTrainer){
+        await db.query('INSERT INTO trainerInfo ()')
+    }
     
     await db.query(`INSERT INTO members (username, userPassword) VALUES ('${username}', '${password}')`);
 
