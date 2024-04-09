@@ -31,12 +31,27 @@ VALUES
     ('N/A', 4); 
 
 -- Sample data for memberInfo table
-INSERT INTO memberInfo (firstName, lastName, dateOfBirth, memberWeight, memberHeight, medicationID, memberID)
+INSERT INTO memberInfo (firstName, lastName, dateOfBirth, memberWeight, memberHeight, trainer, adminStaff, medicationID, memberID)
 VALUES 
     ('Sherif', 'Bedeir Hussein', '1974-01-20', 70.5, 180, 1, 1),
     ('Moufid', 'Al Kayal', '1964-03-05', 65.2, 165, 2, 2),
     ('Julia', 'Johnson', '1992-12-20', 55.8, 170, 3, 3),
     ('Jack', 'Black', '1988-03-10', 80.3, 175, 4, 4);
+
+
+INSERT INTO trainerInfo (firstName, lastName, dateOfBirth, memberID)
+VALUES
+    ('Mohammad', 'Ali', '1942-01-17', 1),
+    ('Mike', 'Tyson', '1966-06-30', 2), 
+    ('Noel', 'Job', '2003-09-05', 3), 
+    ('Joe', 'Frazier', '1944-01-12', 4);
+
+
+INSERT INTO adminInfo (firstName, lastName, dateOfBirth, staffID)
+    ('Rachel', 'Al Kayal', '2001-01-23', 1), 
+    ('Youssef', 'Bedeir Hussein', '2003-01-11', 2), 
+    ('Lucy', 'Chen', '1978-04-31', 3); 
+    ('Paul', 'Bedier', '2004-12-12', 4); 
 
 -- Sample data for memberGoals table
 INSERT INTO memberGoals (checkIn, currentWeight, goalWeight, memberID)
@@ -109,3 +124,4 @@ VALUES
     ('2024-03-01', '09:00:00', '13:00:00', 2),
     ('2024-03-01', '10:00:00', '14:00:00', 3),
     ('2024-03-01', '11:00:00', '15:00:00', 4);
+
