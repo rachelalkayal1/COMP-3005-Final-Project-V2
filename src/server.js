@@ -86,7 +86,7 @@ async function addNewMember (req, res){
 
     await db.query(`INSERT INTO memberInfo (firstName, lastName, dateOfBirth, memberWeight, memberHeight, medicationID, memberID)
                     VALUES ('${firstName}', '${lastName}', '${dob}', ${weight}, ${height}, ${medicationID}, ${memberID})`);
-    
+
     res.status(200).send({ memberID, medicationID });
     res.end();
 }

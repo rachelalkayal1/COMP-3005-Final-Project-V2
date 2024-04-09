@@ -32,7 +32,15 @@ html(lang="en")
             br
             br
             input(type="text", id="medicine" placeholder="Enter Medication! OR N/A")
-
+            br 
+            br
+            label(for="isTrainer") Are you a Trainer?
+            input(type="checkbox", id="isTrainer", name="isTrainer", onchange="addTrainer()")
+            br
+            br
+            label(for="isAdmin") Are you an Administrative Staff?
+            input(type="checkbox", id="isAdmin", name="isAdmin", onchange="addAdmin()")
+            
 
             p(id="firstNameError")
             p(id="lastNameError")    

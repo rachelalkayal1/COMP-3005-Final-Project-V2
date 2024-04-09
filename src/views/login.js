@@ -59,6 +59,7 @@ function create(){
     let height = document.getElementById('height').value;
     let weight = document.getElementById('weight').value;
     let medication = document.getElementById('medicine').value;
+    let isTrainer = document.getElementById
 
     if(!firstName){
         document.getElementById('firstNameError').innerHTML = `<p id="firstNameError">Please enter your first name`; 
@@ -123,6 +124,13 @@ function create(){
     }
     addMemberRequest.send(JSON.stringify(userInformation));
 
+}
+
+function addTrainer(){
+    let checkBox = document.getElementById('isTrainer');
+    if(checkBox.checked){
+
+    }
 }
     
 
