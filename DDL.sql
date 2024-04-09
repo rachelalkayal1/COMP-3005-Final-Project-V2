@@ -41,6 +41,24 @@ create TABLE memberInfo (
         on delete set null
 );
 
+create TABLE trainerInfo (
+    firstName       TEXT NOT NULL,
+    lastName        TEXT NOT NULL, 
+    dateOfBirth     DATE,
+    trainerID,      INT,
+    foreign key (trainerID) references trainers
+        on delete set null
+);
+
+create TABLE adminInfo (
+    firstName       TEXT NOT NULL,
+    lastName        TEXT NOT NULL, 
+    dateOfBirth     DATE,
+    staffID         INT, 
+    foreign key (staffID) references admins
+        on delete set null
+);
+
 create TABLE memberGoals (
     checkIn         DATE,
     currentWeight   FLOAT,
@@ -142,4 +160,5 @@ create table paymentProcess(
     foreign key (memberID) references members
 		on delete set null
 );
+
 
