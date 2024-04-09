@@ -1,0 +1,56 @@
+doctype html
+html(lang="en")
+    head 
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
+        body 
+            h2 Welcome to health 
+            div(id="create")
+            legend Enter your First Name
+            input(type="text" id="firstName" placeholder="Enter First Name!")
+            br
+            br
+            input(type="text", id="lastName" placeholder="Enter Last Name!")
+            br
+            br
+            input(type="password" id="password" placeholder="Enter Password!")
+            br
+            br
+            input(type="text", id="username" placeholder="Enter a Username!")
+            br
+            br
+            input(type="date", id="dob", name="dob", placeholder="Enter Date of Birth!")
+            br
+            br
+            //-user can change their metric system
+            input(type="number", id="height" placeholder="Enter Height!", min="0")
+            br
+            br
+            input(type="number", id="weight" placeholder="Enter Weight!", min="0")
+            br
+            br
+            input(type="text", id="medicine" placeholder="Enter Medication! OR N/A")
+            br 
+            br
+            label(for="isTrainer") Are you a Trainer?
+            input(type="checkbox", id="isTrainer", name="isTrainer", onchange="addTrainer()")
+            br
+            br
+            label(for="isAdmin") Are you an Administrative Staff?
+            input(type="checkbox", id="isAdmin", name="isAdmin", onchange="addAdmin()")
+            
+
+            p(id="firstNameError")
+            p(id="lastNameError")    
+            p(id="usernameError")        
+            p(id="dateError")                                                  
+            p(id="passError")
+            p(id="heightError")
+            p(id="weightError")
+            p(id ="medicineError")
+            
+            button(type='submit', id="login", onclick='create()') Create!
+        script 
+            include login.js 

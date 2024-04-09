@@ -1,0 +1,42 @@
+html(lang="en")
+    head 
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        style  
+            include fitnessAcheivement.css 
+        body 
+            h2 Fitness Achievements 
+
+            div(id='weightSection')
+                h3 Weight Goals
+                p Current Weight :  #{weight.currentWeight} kg
+                p Goal Weight : #{weight.goalWeight} kg
+                if weight.currentWeight > weight.goalWeight 
+                    p Goal is to lose: #{weight.currentWeight - weight.goalWeight} kg
+                else 
+                    p Goal is to gain: #{weight.goalWeight - weight.currentWeight} kg
+                p Incremements blah blah add t hat please 
+            
+            div(id='liftSection')
+                h3 Lifting Goals 
+                p ________________________________________________
+                each lift in allLifts 
+                    p #{lift.nameoflift}
+                    p Personal Record: #{lift.currentweight} lbs
+                    p Date of Personal Record: #{lift.dateoflift}
+                    p Last record: #{lift.originalweight} lbs
+                    p ________________________________________________
+
+                button(id="newPR" onclick="toggleAdd()") Add New Progression
+
+            div(id='addingNewPR')
+                input(type="text" id="nameOfLift" placeholder="Enter Name of Lift!")
+                input(type="date", id="dateoflift", name="dateoflift", placeholder="Enter Date of Lift!")
+                input(type="number", id="weight" placeholder="Enter Weight!", min="0")
+                button(id="submit" onclick="addNewProgression()") Submit
+
+
+
+        script 
+            include fitnessAcheivements.js

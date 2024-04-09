@@ -1,0 +1,34 @@
+doctype html
+html(lang="en")
+    head 
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
+        body 
+            h2 See All Classes
+                   div(id="currentClasses")
+                p Upcoming Classes 
+                each gymClass in classes  
+                    p #{gymClass.classname}
+                    p Description: #{gymClass.description}
+                    p Date: #{gymClass.dateofclass}
+                    p Time: #{gymClass.starttime} - #{gymClass.endtime}
+                    p Duration: #{gymClass.duration}
+
+            - let number = 0; 
+
+            div(id="availableClasses")
+                p Available Classes 
+                input(type="text" id="nameOfLift" placeholder="Search for a class")
+                each gymClass in allClasses.rows
+                    p(id="nameofclass" + number) #{gymClass.classname}
+                    p Description: #{gymClass.description}
+                    p Date: #{gymClass.dateofclass}
+                    p Time: #{gymClass.starttime} - #{gymClass.endtime}
+                    p Duration: #{gymClass.duration}
+                    button(id="enrollMember" onclick='enrollMember('+ number + ')') Enroll Into Class 
+                    - number = number + 1
+
+        script 
+            include classes.js
