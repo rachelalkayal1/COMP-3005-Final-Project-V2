@@ -7,3 +7,24 @@ html(lang="en")
 
         body 
             h2 Health Information
+            br
+            div(id="memberInfo")
+                p First Name: #{firstName}
+                br
+                p Last Name: #{lastName}
+                br
+                p Date Of Birth: #{dateOfBirth}
+                br
+                p Weight: #{weight}
+                input(type="number", id="updatedWeight", placeholder="Enter your new weight: ")
+                button(onclick="updateWeight()") Update Weight 
+                br
+                p Height: #{height}
+                span#height
+                input(type="number", id="updatedHeight", placeholder="Enter your new height: ")
+                button(onclick="updateHeight()") Update Height
+                br
+                p Medicine: #{medication}
+
+        script 
+            include healthInformation.js
