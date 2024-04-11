@@ -110,28 +110,20 @@ function create(){
         document.getElementById('medicineError').innerHTML = " ";
     }
 
-    let userInformation = {firstName : firstName, lastName : lastName, dob : dob, username : username, password : password, height : height, weight : weight, medication : medication};
+    let userInformation = {firstName : firstName, lastName : lastName, dob : dob, username : username, password : password, height : height, weight : weight, medication : medication, isTrainer : isTrainer, isAdmin : isAdmin};
     let addMemberRequest = new XMLHttpRequest();
     addMemberRequest.open("POST", "/addMember", true);
     addMemberRequest.setRequestHeader("Content-Type", "application/json");
 
     addMemberRequest.onreadystatechange = function() {
         if(this.readyState == 4 && this.status == 200){
-            //redirect user to the dashboard once they are logged in
             window.location = "http://localhost:3000/" + username;
-            let response = this.responseText; 
-            console.log(response);
+            let response = this.responseText;
+            console.log(response); 
+        
         }
     }
     addMemberRequest.send(JSON.stringify(userInformation));
-
-}
-
-function addTrainer(){
-    let checkBox = document.getElementById('isTrainer');
-    if(checkBox.checked){
-
-    }
 }
     
 

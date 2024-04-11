@@ -35,11 +35,11 @@ html(lang="en")
             br 
             br
             label(for="isTrainer") Are you a Trainer?
-            input(type="checkbox", id="isTrainer", name="isTrainer", onchange="addTrainer()")
+            input(type="checkbox", id="isTrainer", value="off", onclick="document.getElementById('isTrainer').value = 'on'", name="isTrainer")
             br
             br
             label(for="isAdmin") Are you an Administrative Staff?
-            input(type="checkbox", id="isAdmin", name="isAdmin", onchange="addAdmin()")
+            input(type="checkbox", id="isAdmin", value="off", onclick="document.getElementById('isAdmin').value = 'on'", name="isAdmin")
             
 
             p(id="firstNameError")
