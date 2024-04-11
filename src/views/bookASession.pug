@@ -5,5 +5,31 @@ html(lang="en")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
 
-        body 
-            h2 Book a Private Session  
+        body
+            h2 Book a Private Session
+
+            - let number = 0; 
+            div(id="trainersSchedules")
+                each trainer in trainerSchedules
+                    p ___________________________________________
+                    p(id="trainerName") Trainer: #{trainer.trainerFirst} #{trainer.trainerLast}
+                    p Times Available to Book 
+                    each time in trainer.trainerSchedule
+                        p(id="date" + number) Date: #{time.dateofavailability} 
+                        p(id="start" + number) Start Time: #{time.starttime}
+                        p(id="end" + number) End Time: #{time.endtime}
+                        button(id="bookSlot" onclick='memberBookSlot(' + number + ')') Book Slot
+                        - number = number + 1 
+            div(id="upcomingSessions")
+                h2 Upcoming Sessions
+                each upcomingClass in memberClasses 
+                    p __________________________________________
+                    h3 Class with #{upcomingClass.firstname} #{upcomingClass.lastname}
+                    p Date: #{upcomingClass.sessiondate} 
+                    p Start Time: #{upcomingClass.sessiontime}
+                    p Duration: #{upcomingClass.duration}
+
+        script 
+            include bookASession.js
+
+

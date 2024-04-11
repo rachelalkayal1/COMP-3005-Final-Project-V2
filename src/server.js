@@ -21,7 +21,6 @@ app.get("/newMember", renderSignUp);
 app.get("/fitnessAchievements", renderFitnessAchievements);
 app.post("/addLiftProgression", addNewProgression);
 app.get("/exerciseRoutine", renderExercisePage);
-app.post("/submitExerciseRoutine", renderExerciseRoutine);
 app.get("/allClasses", renderClassPage); 
 app.get("/bookASession", renderPrivateSession);
 app.get("/healthInformation", renderHealthInformation);
@@ -29,9 +28,9 @@ app.post("/addMember", addNewMember);
 app.post("/enrollMemberIntoClass", enrollMemberIntoClass); 
 app.post("/updateWeight", updateWeight);
 app.post("/updateHeight", updateHeight);
+app.post("/memberBookSlot", memberBookSlot); 
 app.post("/:username", validateLogin);
 app.get("/:username", redirectDashboard);
-
 
 
 let username; 
@@ -98,6 +97,7 @@ async function renderHealthInformation (req, res) {
     const memberInfo = memberInfoResult.rows[0]; 
     const medicationIDResult = await db.query(`SELECT * FROM medicationList WHERE memberID = ${memberID}`)
     const medicationID = medicationIDResult.rows[0].nameofmedication;
+
     res.render('healthInformation', {
         firstName: memberInfo.firstname,
         lastName: memberInfo.lastname,
@@ -107,7 +107,6 @@ async function renderHealthInformation (req, res) {
         medication: medicationID
     });
 }
-
 
 async function updateWeight(req, res) {
     let newWeight = req.body.newWeight;
@@ -170,7 +169,6 @@ async function renderFitnessAchievements (req, res) {
 
 }
 
-
 async function renderClassPage (req, res) {
     const allClasses = await db.query(`SELECT  * FROM class`); 
 
@@ -183,8 +181,6 @@ async function renderClassPage (req, res) {
     for(let i = 0; i < allClasses.rows.length; i++){
         const classMembers = (`SELECT * FROM classmembers WHERE classid = ${allClasses.rows[i].classid}`); 
         const enrolledClasses = await db.query(`SELECT * FROM (${classMembers}) WHERE memberID = ${memberID}`);
-        console.log(enrolledClasses.rows.length);
-
         if(enrolledClasses.rows.length != 0){
             memberClassInformation.push(enrolledClasses.rows[0]);
         }
@@ -206,16 +202,51 @@ async function renderClassPage (req, res) {
 }
 
 async function renderPrivateSession(req, res) {
-    const scheduleInformation = await db.query(`SELECT * FROM trainerschedule`); 
-    let trainerSchedule = []; 
 
-    for(let i = 0; i < scheduleInformation.rows.length; i++){
-        const trainerInformation = await db.query(`SELECT * FROM trainers WHERE trainerid = ${scheduleInformation.rows[i].trainerid}`); 
-        trainerSchedule.push(trainerInformation.rows[i]);
+    
+    const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
+    const memberID = memberIDResult.rows[0].memberid;
+
+    const allTrainers = await db.query(`SELECT * FROM trainerInfo`); 
+
+    let trainerSchedules = []; 
+
+    for(let i = 0; i < allTrainers.rows.length; i++){
+        const trainerScheduleResult = await db.query(`SELECT * FROM trainerSchedule WHERE trainerid = ${allTrainers.rows[i].trainerid}`);
+
+        trainerSchedules.push({trainerSchedule: trainerScheduleResult.rows, trainerFirst: allTrainers.rows[i].firstname, trainerLast: allTrainers.rows[i].lastname, trainerID: allTrainers.rows[i].trainerid});
+
     }
 
-    console.log(trainerSchedule); 
-    res.render('bookASession');
+    const memberClassesResult = await db.query(`SELECT * FROM privatesession WHERE memberid = ${memberID}`); 
+    const trainersResult = await db.query(`SELECT DISTINCT *
+    FROM (
+        SELECT *
+        FROM privatesession
+        WHERE memberid = ${memberID}
+    ) AS ps JOIN trainerInfo ON trainerInfo.trainerid IN (
+        SELECT trainerid
+        FROM privatesession
+        WHERE memberid = ${memberID}
+    );`); 
+    let memberClasses = trainersResult.rows; 
+
+    console.log(trainersResult); 
+
+
+
+    memberClasses.forEach((date) => {
+        date.sessiondate = date.sessiondate.toString().split("00:00:00").slice(0, -1);
+    })
+
+    trainerSchedules.forEach((trainer) =>{ 
+        trainer.trainerSchedule.forEach((date) =>{
+            date.dateofavailability = date.dateofavailability.toString().split("00:00:00").slice(0, -1);
+        });
+    });
+
+    
+    res.render('bookASession', {trainerSchedules, memberClasses});
 }
 
 async function addNewProgression(req, res) {
@@ -254,8 +285,24 @@ async function enrollMemberIntoClass(req, res){
     const firstname = memberInfoResult.rows[0].firstname; 
     const lastname = memberInfoResult.rows[0].lastname; 
 
-
     await db.query(`INSERT INTO classMembers (memberFirstName, memberLastName, classID, memberID) VALUES ('${firstname}', '${lastname}', ${classID}, ${memberID})`); 
+
+    res.status(200).end();
+}
+
+async function memberBookSlot(req, res){
+    let firstName = req.body.firstName; 
+    let lastName = req.body.lastName;
+    let date = req.body.date; 
+    let startTime = req.body.startTime;
+    let endTime = req.body.endTime;  
+
+    const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
+    const memberID = memberIDResult.rows[0].memberid;
+
+    const findBooking = await db.query(`SELECT * FROM trainerschedule WHERE dateofavailability = '${date}' AND starttime = '${startTime}' AND endtime = '${endTime}'`); 
+    await db.query(`INSERT INTO privatesession (sessiondate, sessiontime, duration, trainerid, memberid) VALUES ('${date}', '${startTime}', ${120}, ${findBooking.rows[0].trainerid}, ${memberID})`);
+    await db.query(`DELETE FROM trainerschedule WHERE dateofavailability = '${date}' AND starttime = '${startTime}' AND endtime = '${endTime}'`);
 
     res.status(200).end();
 }
