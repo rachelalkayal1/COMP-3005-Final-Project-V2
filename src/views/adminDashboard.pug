@@ -1,0 +1,17 @@
+doctype html
+html(lang="en")
+    head 
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title TITLE OF PROJECT 
+
+        body 
+            
+
+            div(id="welcome-message")
+                h2 Welcome #{user} (Admin)
+            div(id="links")
+                button(id="healthInformation" onclick="document.location='/healthInformation'") Health Information!
+                button(id="exerciseRoutine" onclick="document.location='/exerciseRoutine'") Add Exercise Routine!
+                button(id="fitnessAchievements" onclick="document.location='/fitnessAchievements'") Fitness Achievements! 

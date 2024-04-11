@@ -21,7 +21,9 @@ app.get("/newMember", renderSignUp);
 app.get("/fitnessAchievements", renderFitnessAchievements);
 app.post("/addLiftProgression", addNewProgression);
 app.get("/exerciseRoutine", renderExercisePage);
-app.post("/submitExerciseRoutine", renderExerciseRoutine);
+app.get("/trainerSchedule", renderManageSchedule);
+app.get("/viewMemberProfile", renderMemberProfile);
+app.post("/setSchedule", setTrainerSchedule);
 app.get("/allClasses", renderClassPage); 
 app.get("/bookASession", renderPrivateSession);
 app.get("/healthInformation", renderHealthInformation);
@@ -33,9 +35,10 @@ app.post("/:username", validateLogin);
 app.get("/:username", redirectDashboard);
 
 
-
 let username; 
 let password; 
+let isTrainer;
+let isAdmin;
 //show the login page
 function renderLogin (req, res){
     res.render('login');
@@ -48,9 +51,22 @@ function renderSignUp (req, res){
     db.end;
 }
 
-function validateLogin(req, res){
+async function validateLogin(req, res){
     username = req.body.username; 
     password = req.body.password; 
+    isTrainer = req.body.isTrainer;
+    isAdmin = req.body.isAdmin;
+
+    const trainerNameResult = await db.query(`SELECT username from trainers WHERE username = '${username}'`);
+    if (trainerNameResult.rows.length != 0){
+        isTrainer = "on"; 
+    }
+
+    const adminNameResult = await db.query(`SELECT username from admins WHERE username = '${username}'`);
+
+    if (adminNameResult.rows.length != 0){
+        isAdmin = "on"; 
+    }
 
     let result = db.query(`SELECT * FROM members WHERE username = '${username}' and userpassword = '${password}'`);
 
@@ -60,8 +76,14 @@ function validateLogin(req, res){
     }
 }
 
-function redirectDashboard (req, res){
-    res.render('dashboard', {user: username});
+async function redirectDashboard (req, res){
+    if (isTrainer === "on"){
+        res.render('trainerDashboard', {user: username});
+    }else if(isAdmin === "on"){
+        res.render('adminDashboard', {user: username});
+    }else{
+        res.render('dashboard', {user: username});
+    }
 }
 
 async function addNewMember (req, res){
@@ -72,22 +94,40 @@ async function addNewMember (req, res){
     let height = req.body.height; 
     let weight = req.body.weight; 
     let dob = req.body.dob;
-    let medication = req.body.medication
+    let medication = req.body.medication;
+    isTrainer = req.body.isTrainer;
+    isAdmin = req.body.isAdmin;
+    let trainerName;
     
-    await db.query(`INSERT INTO members (username, userPassword) VALUES ('${username}', '${password}')`);
+    if (isTrainer === "on"){
+        await db.query(`INSERT INTO trainers (username, userPassword) VALUES ('${username}', '${password}')`);
+        const trainerIDResult = await db.query(`SELECT trainerID from trainers WHERE username = '${username}'`);
+        const trainderID = trainerIDResult.rows[0].trainerid;
+        await db.query(`INSERT INTO trainerInfo (firstName, lastName, dateOfBirth, trainerID) VALUES ('${firstName}', '${lastName}', '${dob}', '${trainderID}')`);
+        // const trainerNameResult = await db.query(`SELECT username from trainers WHERE username = '${username}'`);
+        // trainerName = trainerNameResult.rows[0].username;
+        
+    }else if (isAdmin === "on"){
+        await db.query(`INSERT INTO admins (username, userPassword) VALUES ('${username}', '${password}')`);
+        const staffIDResult = await db.query(`SELECT staffID from admins WHERE username = '${username}'`);
+        const staffID = staffIDResult.rows[0].staffid;
+        await db.query(`INSERT INTO adminInfo (firstName, lastName, dateOfBirth, staffID) VALUES ('${firstName}', '${lastName}', '${dob}', '${staffID}')`);
+        
+    }else{
+        await db.query(`INSERT INTO members (username, userPassword) VALUES ('${username}', '${password}')`);
 
-    const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
-    const memberID = memberIDResult.rows[0].memberid;
+        const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
+        const memberID = memberIDResult.rows[0].memberid;
 
-    await db.query(`INSERT INTO medicationList (nameOfMedication, memberID) VALUES ('${medication}', ${memberID})`);
+        await db.query(`INSERT INTO medicationList (nameOfMedication, memberID) VALUES ('${medication}', ${memberID})`);
 
-    const medicationIDResult = await db.query(`SELECT medicationID FROM medicationList WHERE memberID = ${memberID}`);
-    const medicationID = medicationIDResult.rows[0].medicationid;
+        const medicationIDResult = await db.query(`SELECT medicationID FROM medicationList WHERE memberID = ${memberID}`);
+        const medicationID = medicationIDResult.rows[0].medicationid;
 
-    await db.query(`INSERT INTO memberInfo (firstName, lastName, dateOfBirth, memberWeight, memberHeight, medicationID, memberID)
-                    VALUES ('${firstName}', '${lastName}', '${dob}', ${weight}, ${height}, ${medicationID}, ${memberID})`);
-
-    res.status(200).send({ memberID, medicationID });
+        await db.query(`INSERT INTO memberInfo (firstName, lastName, dateOfBirth, memberWeight, memberHeight, medicationID, memberID)
+                        VALUES ('${firstName}', '${lastName}', '${dob}', ${weight}, ${height}, ${medicationID}, ${memberID})`);
+    }
+    res.status(200).send({ isTrainer, isAdmin});
     res.end();
 }
 
@@ -260,3 +300,24 @@ async function enrollMemberIntoClass(req, res){
     res.status(200).end();
 }
 
+function renderManageSchedule(req, res){
+    res.render('trainerSchedule');
+}
+
+async function setTrainerSchedule(req, res){
+    let dateOfAvailability = req.body.dateOfAvailability;
+    let startTime = req.body.startTime;
+    let endTime = req.body.endTime;
+
+    const trainerIDResult = db.query(`SELECT trainerID FROM trainers WHERE username = '${username}'`);
+    console.log("Trainer ID Result:", trainerIDResult);
+    const trainerID = trainerIDResult.rows[0].trainerid;
+
+    await db.query(`INSERT INTO trainerSchedule (dateOfAvailiability, startTime, endTime, trainerID) VALUES ('${dateOfAvailability}', '${startTime}', '${endTime}', ${trainerID}`);
+
+    res.status(200).end();
+}
+
+function renderMemberProfile(req, res){
+    res.render('viewMemberProfile');
+}
