@@ -7,4 +7,12 @@ html(lang="en")
         title TITLE OF PROJECT 
 
         body 
-            h2 View Member Profile 
+            div(id="information")
+            each info in memberInformation 
+                h2 Member: #{info.firstname} #{info.lastname}
+                p 
+                h4 Weight: #{info.memberweight}
+                p 
+                h4 Height: #{info.memberheight}
+                p 
+                h4 Medication ID: #{info.medicationid}

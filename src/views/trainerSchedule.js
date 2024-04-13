@@ -1,13 +1,19 @@
 function submit(){
     let dateOfAvailability = document.getElementById('dateOfAvailability').value;
     let startTime = document.getElementById('pickStartTime').value;
-    let endTimeResult = document.getElementById('endTime').value;
-    endTime = endTimeResult + 2;
+    let startTimeParts = startTime.split(':');
+    let hours = parseInt(startTimeParts[0]);
+    let minutes = parseInt(startTimeParts[1]);
+    hours += 2;
+    let endTime = ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2);
     let schedulingInfo = {dateOfAvailability : dateOfAvailability, startTime : startTime, endTime : endTime}
+    document.getElementById('endTime').value = endTime;
+
     let submitRequest = new XMLHttpRequest();
     submitRequest.open("POST", "/setSchedule", true);
     submitRequest.setRequestHeader("Content-Type", "application/json");
-
+    console.log(startTime);
+    console.log(endTime);
     submitRequest.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200){
             var information = document.getElementById('scheduleManagement');

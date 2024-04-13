@@ -1,12 +1,13 @@
 //connect to the database on the server side 
 const db = require ('./databaseConnection.js');
+const e = require('express');
 const express = require ('express'); 
 const pug = require('pug');
 const app = express(); 
 const port = 3000;
 
 app.listen(port, ()=>{
-    console.log("Sever is now listening at port 3000");
+    console.log("Server is now listening at port 3000");
 });
 
 app.set('views', './views'); 
@@ -21,8 +22,14 @@ app.get("/newMember", renderSignUp);
 app.get("/fitnessAchievements", renderFitnessAchievements);
 app.post("/addLiftProgression", addNewProgression);
 app.get("/exerciseRoutine", renderExercisePage);
+app.post("/submitExerciseRoutine", renderExerciseRoutine);
 app.get("/trainerSchedule", renderManageSchedule);
 app.get("/viewMemberProfile", renderMemberProfile);
+app.get("/payments", renderPaymentPage);
+app.post("/makePaymentMember", makePayment);
+app.post("/makeMonthlyPayment", monthlyPayment);
+app.get("/memberProfile", renderMemberInformationTrainer);
+app.post("/viewMemberInformation", viewMemberInformation); 
 app.post("/setSchedule", setTrainerSchedule);
 app.get("/allClasses", renderClassPage); 
 app.get("/bookASession", renderPrivateSession);
@@ -32,13 +39,15 @@ app.post("/enrollMemberIntoClass", enrollMemberIntoClass);
 app.post("/updateWeight", updateWeight);
 app.post("/updateHeight", updateHeight);
 app.post("/:username", validateLogin);
-app.get("/:username", redirectDashboard);
+app.get("/:username", redirectDashboard); 
 
 
 let username; 
 let password; 
 let isTrainer;
 let isAdmin;
+let memberTrainerFirst; 
+let memberTrainerLast; 
 //show the login page
 function renderLogin (req, res){
     res.render('login');
@@ -181,10 +190,64 @@ async function renderExercisePage (req, res){
     const previousLogs = [];
 
     previousLogs.push(results.rows);
+    previousLogs[0].forEach((log) => {
+        log.dateofexercise = log.dateofexercise.toString().split("00:00:00").slice(0, -1);
+    })
     res.render('exerciseRoutine', {
         previousLogs: previousLogs[0]
     });
 
+}
+
+async function submitExerciseRoutine(req, res) {
+    console.log("hello");
+    let dateOfLift = req.body.dateOfLift;
+    let nameOfLift = req.body.nameOfLift;
+    let formOfCardio = req.body.formOfCardio;
+    let duration = req.body.duration;
+    let caloriesBurned;
+    const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
+    const memberID = memberIDResult.rows[0].memberid;
+
+    if (formOfCardio === 'Walking'){
+        caloriesBurned = 5 * duration; 
+    }else if (formOfCardio === 'Running'){
+        caloriesBurned = 10 * duration;
+    }else if (formOfCardio === 'Swimming'){
+        caloriesBurned = 8 * duration;
+    }else{
+        caloriesBurned = 0;
+    }
+
+    await db.query(`INSERT INTO exerciseRoutine (dateOfExercise, formOfCardio, nameOfLift, caloriesBurned, memberID, duration)
+                    VALUES ('${dateOfLift}', '${formOfCardio}', '${nameOfLift}', ${caloriesBurned}, ${memberID}, ${duration})`);
+
+    res.status(200).end();
+}
+
+async function renderExerciseRoutine(req, res) {
+    let dateOfLift = req.body.dateOfLift;
+    let nameOfLift = req.body.nameOfLift;
+    let formOfCardio = req.body.formOfCardio;
+    let duration = req.body.duration;
+    let caloriesBurned;
+    const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
+    const memberID = memberIDResult.rows[0].memberid;
+
+    if (formOfCardio === 'Walking'){
+        caloriesBurned = 5 * duration; 
+    }else if (formOfCardio === 'Running'){
+        caloriesBurned = 10 * duration;
+    }else if (formOfCardio === 'Swimming'){
+        caloriesBurned = 8 * duration;
+    }else{
+        caloriesBurned = 0;
+    }
+
+    await db.query(`INSERT INTO exerciseRoutine (dateOfExercise, formOfCardio, nameOfLift, caloriesBurned, memberID, duration)
+                    VALUES ('${dateOfLift}', '${formOfCardio}', '${nameOfLift}', ${caloriesBurned}, ${memberID}, ${duration})`);
+
+    res.status(200).end();
 }
 
 async function renderFitnessAchievements (req, res) {
@@ -300,8 +363,20 @@ async function enrollMemberIntoClass(req, res){
     res.status(200).end();
 }
 
-function renderManageSchedule(req, res){
-    res.render('trainerSchedule');
+async function renderManageSchedule(req, res){
+    const trainerIDResult = await db.query(`SELECT trainerID FROM trainers WHERE username = '${username}'`);
+    const trainerID = trainerIDResult.rows[0].trainerid;
+    const results = await db.query(`SELECT * FROM trainerSchedule WHERE trainerID = ${trainerID}`);
+
+    const previousLogs = [];
+
+    previousLogs.push(results.rows);
+    previousLogs[0].forEach((log) => {
+        log.dateofavailability = log.dateofavailability.toString().split("00:00:00").slice(0, -1);
+    })
+    res.render('trainerSchedule', {
+        previousLogs: previousLogs[0]    
+    });
 }
 
 async function setTrainerSchedule(req, res){
@@ -309,15 +384,102 @@ async function setTrainerSchedule(req, res){
     let startTime = req.body.startTime;
     let endTime = req.body.endTime;
 
-    const trainerIDResult = db.query(`SELECT trainerID FROM trainers WHERE username = '${username}'`);
-    console.log("Trainer ID Result:", trainerIDResult);
+    const trainerIDResult = await db.query(`SELECT trainerID FROM trainers WHERE username = '${username}'`);
     const trainerID = trainerIDResult.rows[0].trainerid;
 
-    await db.query(`INSERT INTO trainerSchedule (dateOfAvailiability, startTime, endTime, trainerID) VALUES ('${dateOfAvailability}', '${startTime}', '${endTime}', ${trainerID}`);
+    await db.query(`INSERT INTO trainerSchedule (dateOfAvailability, startTime, endTime, trainerID) VALUES ('${dateOfAvailability}', '${startTime}', '${endTime}', ${trainerID})`);
 
     res.status(200).end();
 }
 
-function renderMemberProfile(req, res){
-    res.render('viewMemberProfile');
+async function renderMemberProfile(req, res){
+    const results = await db.query(`SELECT * FROM memberInfo`);
+    const members = [];
+    members.push(results.rows);  
+    res.render('allMembersTrainer', {
+        members: members[0]    
+    });
+}
+
+async function viewMemberInformation(req, res){
+    memberTrainerFirst = req.body.firstName; 
+    memberTrainerLast = req.body.lastName; 
+
+
+    const memberResults = await db.query(`SELECT * FROM memberInfo WHERE firstname = '${memberTrainerFirst}' AND lastName = '${memberTrainerLast}'`);
+    const information = []; 
+
+    information.push(memberResults.rows); 
+
+    res.status(200).json({information});
+    
+}
+
+async function renderMemberInformationTrainer(req, res){
+    const memberResults = await db.query(`SELECT * FROM memberInfo WHERE firstname = '${memberTrainerFirst}' AND lastName = '${memberTrainerLast}'`);
+    const memberInformation = []; 
+    memberInformation.push(memberResults.rows); 
+    res.render('viewMemberProfile', {memberInformation: memberInformation[0]}); 
+
+}
+
+async function renderPaymentPage(req, res){
+    const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
+    const memberID = memberIDResult.rows[0].memberid;
+
+    const results = await db.query(`SELECT paymentamount FROM sessionpayment WHERE memberid = ${memberID}`);
+    let paymentamount = [];
+    paymentamount.push(results.rows[0]);
+
+    const resultsDue = await db.query(`SELECT paymentdue FROM sessionpayment WHERE memberid = ${memberID}`)
+    let paymentdue = [];
+    paymentdue.push(resultsDue.rows[0]);
+
+    paymentdue.forEach((date) => {
+        date.paymentdue = date.paymentdue.toString().split("00:00:00").slice(0, -1);
+    })
+
+    const monthlyfeeamount = await db.query(`SELECT monthlypayment FROM sessionpayment WHERE memberid = ${memberID}`);
+    let monthlyFeeAmount = [];
+    monthlyFeeAmount.push(monthlyfeeamount.rows[0]);
+
+    const monthlyfeedue = await db.query(`SELECT monthlypaymentdue FROM sessionpayment WHERE memberid = ${memberID}`)
+    let monthlyFeeDue = [];
+    monthlyFeeDue.push(monthlyfeedue.rows[0]);
+
+    monthlyFeeDue.forEach((date) => {
+        date.monthlypaymentdue = date.monthlypaymentdue.toString().split("00:00:00").slice(0, -1);
+    })
+
+    res.render('payments', {
+        paymentamount : paymentamount, 
+        paymentdue : paymentdue,
+        monthlyFeeAmount : monthlyFeeAmount,
+        monthlyFeeDue : monthlyFeeDue
+    });
+
+}
+
+async function makePayment(req, res){
+    const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
+    const memberID = memberIDResult.rows[0].memberid;
+
+    await db.query(`UPDATE sessionPayment SET paymentamount = 0 WHERE memberID = ${memberID}`);
+
+    await db.query(`UPDATE sessionPayment SET paidforclasses = true WHERE paymentamount = 0 AND memberID = ${memberID}`);
+
+    res.status(200).json({ message: "Payment made successful" });
+
+}
+
+async function monthlyPayment(req, res){
+    const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
+    const memberID = memberIDResult.rows[0].memberid;
+
+    await db.query(`UPDATE sessionPayment SET monthlypayment = 0 WHERE memberID = ${memberID}`);
+
+    await db.query(`UPDATE sessionPayment SET paidformonthly = true WHERE monthlypayment = 0 AND memberID = ${memberID}`);
+
+    res.status(200).json({ message: "Payment made successful" });
+
 }

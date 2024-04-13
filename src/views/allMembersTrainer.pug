@@ -1,0 +1,22 @@
+doctype html
+html(lang="en")
+    head 
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
+        body 
+            h2 All Members
+            div(id='members')
+            each member in members 
+                p #{member.firstname} #{member.lastname}
+
+            br
+            input(type='text', id='memberToView', name='memberToView', placeholder='Enter Name Of Member')
+            button(type='submit', id='view', onclick='view()') View 
+
+            //- each pieceOfInfo in memberInformation 
+            //-     p Height: 
+            //-     p Weight: 
+        script 
+            include viewMemberProfile.js
