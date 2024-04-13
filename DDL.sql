@@ -45,7 +45,8 @@ create TABLE trainerInfo (
     firstName       TEXT NOT NULL,
     lastName        TEXT NOT NULL, 
     dateOfBirth     DATE,
-    trainerID,      INT,
+    sessionFee      FLOAT, 
+    trainerID      INT,
     foreign key (trainerID) references trainers
         on delete set null
 );
@@ -73,6 +74,7 @@ create TABLE exerciseRoutine (
     formOfCardio    TEXT NOT NULL, 
     nameOfLift      TEXT NOT NULL, 
     caloriesBurned  FLOAT,
+    duration        FLOAT,
     memberID        INT, 
     foreign key (memberID) references members
         on delete set null
@@ -160,5 +162,19 @@ create table paymentProcess(
     foreign key (memberID) references members
 		on delete set null
 );
+
+create table sessionPayment(
+    memberFirstName     TEXT NOT NULL, 
+    memberLastName      TEXT NOT NULL, 
+    paymentAmount       FLOAT, 
+    paymentDue          Date, 
+    paidForClasses      Boolean, 
+    paidForMonthly      Boolean,
+    monthlyPayment      FLOAT,
+    monthlyPaymentDue   Date,
+    memberID            INT,
+    foreign key (memberID) references members
+        on delete set null
+)
 
 
