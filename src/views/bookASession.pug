@@ -13,6 +13,7 @@ html(lang="en")
                 each trainer in trainerSchedules
                     p ___________________________________________
                     p(id="trainerName") Trainer: #{trainer.trainerFirst} #{trainer.trainerLast}
+                    p(id="sessionFee") Session Fee: $#{trainer.trainerFee}
                     p Times Available to Book 
                     each time in trainer.trainerSchedule
                         p(id="date" + number) Date: #{time.dateofavailability} 
@@ -24,10 +25,11 @@ html(lang="en")
                 h2 Upcoming Sessions
                 each upcomingClass in memberClasses 
                     p __________________________________________
-                    h3 Class with #{upcomingClass.firstname} #{upcomingClass.lastname}
+                    h3 Session with #{upcomingClass.firstname} #{upcomingClass.lastname}
                     p Date: #{upcomingClass.sessiondate} 
                     p Start Time: #{upcomingClass.sessiontime}
                     p Duration: #{upcomingClass.duration}
+                    p Amount Due: $#{upcomingClass.sessionfee + upcomingClass.sessionfee}
 
         script 
             include bookASession.js

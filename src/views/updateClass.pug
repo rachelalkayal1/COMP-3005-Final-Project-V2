@@ -1,0 +1,71 @@
+doctype html
+html(lang="en")
+    head 
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title TITLE OF PROJECT 
+        style 
+            include updateClass.css
+
+        body 
+            h2 Update Classes 
+
+        - let number = 0 
+        div(id = "allClasses")
+            p All Classes
+            each currentClass in allClasses  
+                div(id="currentClass" + number)
+                    p #{currentClass.classname}
+                    p Description: #{currentClass.description}
+                    p Date: #{currentClass.dateofclass}
+                    p Time: #{currentClass.starttime} - #{currentClass.endtime}
+                    p Duration: #{currentClass.duration}
+                    p Room: #{currentClass.roomName}
+                    p Trainer: #{currentClass.trainerFirst} #{currentClass.trainerLast}
+                    button(id="editClass" onclick='toggleEdit(' + number + ')') Edit Class 
+
+                div(id="editingClass" + number, class="editing")
+                    input(type="text", id="classname" + number, placeholder=currentClass.classname)
+                    input(type="text", id="description" + number,  placeholder=currentClass.description)
+                    select(id="room" + number)
+                        option(value=currentClass.roomName) Change the room
+                        each room in allRooms 
+                            option(value=room.roomtype) #{room.roomtype}
+                    br
+                    select(id="trainer" + number)
+                        option(value=currentClass.trainerFirst + " " + currentClass.trainerLast) Change trainer
+                        each trainer in allTrainers
+                            option(value=trainer.firstname + " " +  trainer.lastname) #{trainer.firstname + trainer.lastname}
+                    label(for="dateofclass") Date of Class 
+                    input(type="date", id="dateofclass" + number, name="dateoflift", placeholder=currentClass.dateofclass) 
+                    br
+                    label(for="starttime") Start Time 
+                    input(type="time", id="starttime" + number, placeholder=currentClass.starttime) 
+                    label(for="endtime") End Time 
+                    input(type="time", id="endtime" + number, placeholder=currentClass.endtime)
+ 
+                    button(id="submit" onclick="changeClass(" + number + ")") Commit changes
+                - number = number + 1 
+
+        div(id="addClass")
+            h4 Add a Class! 
+            input(type="text", id="newclassname", placeholder="New Class Name")
+            input(type="text", id="newclassdescription", placeholder="Description of Class (Optional)")
+
+            br
+            label(for="newclassdate") Date:  
+            input(type="date", id="newclassdate", placeholder="New Class Date")
+            label(for="starttime") Start Time 
+            input(type="time", id="starttime") 
+            label(for="endtime") End Time 
+            input(type="time", id="endtime")
+            select(id="chosenroom")
+                each room in allRooms 
+                    option(value=room.roomtype) #{room.roomtype}
+            select(id="chosentrainer")
+                each trainer in allTrainers
+                    option(value=trainer.firstname) #{trainer.firstname + " " +  trainer.lastname}
+            button(id="submit" onclick="addClass()") Add New Class
+        script
+            include updateClass.js 

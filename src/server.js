@@ -27,11 +27,18 @@ app.post("/setSchedule", setTrainerSchedule);
 app.get("/allClasses", renderClassPage); 
 app.get("/bookASession", renderPrivateSession);
 app.get("/healthInformation", renderHealthInformation);
+app.get("/roomsPage", renderRoomPage); 
+app.get("/processPayments", renderPaymentPage);
+app.get("/equipmentPage", renderEquipmentPage); 
+app.get("/updateClasses", renderUpdateClass); 
+app.post("/changeClass", updateSpecClass);
+app.post("/updateMachineCheckup", updateMachineCheckup); 
 app.post("/addMember", addNewMember); 
 app.post("/enrollMemberIntoClass", enrollMemberIntoClass); 
 app.post("/updateWeight", updateWeight);
 app.post("/updateHeight", updateHeight);
 app.post("/memberBookSlot", memberBookSlot); 
+app.post("/addNewClass", addNewClass);
 app.post("/:username", validateLogin);
 app.get("/:username", redirectDashboard);
 
@@ -256,7 +263,7 @@ async function renderPrivateSession(req, res) {
     for(let i = 0; i < allTrainers.rows.length; i++){
         const trainerScheduleResult = await db.query(`SELECT * FROM trainerSchedule WHERE trainerid = ${allTrainers.rows[i].trainerid}`);
 
-        trainerSchedules.push({trainerSchedule: trainerScheduleResult.rows, trainerFirst: allTrainers.rows[i].firstname, trainerLast: allTrainers.rows[i].lastname, trainerID: allTrainers.rows[i].trainerid});
+        trainerSchedules.push({trainerSchedule: trainerScheduleResult.rows, trainerFirst: allTrainers.rows[i].firstname, trainerLast: allTrainers.rows[i].lastname, trainerID: allTrainers.rows[i].trainerid, trainerFee: allTrainers.rows[i].sessionfee});
 
     }
 
@@ -272,10 +279,6 @@ async function renderPrivateSession(req, res) {
         WHERE memberid = ${memberID}
     );`); 
     let memberClasses = trainersResult.rows; 
-
-    console.log(trainersResult); 
-
-
 
     memberClasses.forEach((date) => {
         date.sessiondate = date.sessiondate.toString().split("00:00:00").slice(0, -1);
@@ -345,6 +348,8 @@ async function memberBookSlot(req, res){
     const findBooking = await db.query(`SELECT * FROM trainerschedule WHERE dateofavailability = '${date}' AND starttime = '${startTime}' AND endtime = '${endTime}'`); 
     await db.query(`INSERT INTO privatesession (sessiondate, sessiontime, duration, trainerid, memberid) VALUES ('${date}', '${startTime}', ${120}, ${findBooking.rows[0].trainerid}, ${memberID})`);
     await db.query(`DELETE FROM trainerschedule WHERE dateofavailability = '${date}' AND starttime = '${startTime}' AND endtime = '${endTime}'`);
+
+    res.status(200).end();  
 }
 
 function renderManageSchedule(req, res){
@@ -357,7 +362,6 @@ async function setTrainerSchedule(req, res){
     let endTime = req.body.endTime;
 
     const trainerIDResult = db.query(`SELECT trainerID FROM trainers WHERE username = '${username}'`);
-    console.log("Trainer ID Result:", trainerIDResult);
     const trainerID = trainerIDResult.rows[0].trainerid;
 
     await db.query(`INSERT INTO trainerSchedule (dateOfAvailiability, startTime, endTime, trainerID) VALUES ('${dateOfAvailability}', '${startTime}', '${endTime}', ${trainerID}`);
@@ -367,4 +371,210 @@ async function setTrainerSchedule(req, res){
 
 function renderMemberProfile(req, res){
     res.render('viewMemberProfile');
+}
+
+async function renderRoomPage(req, res){
+    res.render('manageRooms'); 
+}
+
+async function renderUpdateClass(req, res){
+    
+    const allClasses = await db.query(`SELECT  * FROM class`);
+    const allRooms = await db.query(`SELECT roomtype FROM rooms`); 
+    const allTrainers = await db.query(`SELECT firstname, lastname FROM trainerInfo`);
+
+    allClasses.rows.forEach((currentClass) => {
+        currentClass.dateofclass = currentClass.dateofclass.toString().split("00:00:00").slice(0, -1);
+    }); 
+
+
+    for(let i = 0; i < allClasses.rowCount; i++){
+        const roomInformation = await db.query(`SELECT * FROM rooms WHERE roomid = ${allClasses.rows[i].roomid}`); 
+        allClasses.rows[i].roomName =  roomInformation.rows[0].roomtype;
+        const trainerInformation = await db.query(`SELECT * FROM trainerInfo WHERE trainerid = ${allClasses.rows[i].trainerid}`);
+        allClasses.rows[i].trainerFirst = trainerInformation.rows[0].firstname; 
+        allClasses.rows[i].trainerLast = trainerInformation.rows[0].lastname; 
+    }
+
+
+    res.render('updateClass', {allClasses: allClasses.rows, allRooms: allRooms.rows, allTrainers: allTrainers.rows});
+}
+
+async function renderEquipmentPage(req, res){
+
+    const equipmentResult = await db.query(`SELECT * FROM fitnessequipment`); 
+    const equipment = equipmentResult.rows; 
+
+    equipment.forEach((currentEquipment) => {
+        currentEquipment.nextcheckup = currentEquipment.nextcheckup.toString().split("00:00:00").slice(0, -1);
+        currentEquipment.lastcheckup = currentEquipment.lastcheckup.toString().split("00:00:00").slice(0, -1);
+
+    })
+
+    res.render('manageEquipment', {equipment}); 
+}
+
+async function renderPaymentPage(req, res){
+
+    const allSessionPaymentsResult = await db.query(`SELECT * FROM sessionPayment`); 
+    const allSessionPayment = allSessionPaymentsResult.rows; 
+
+    res.render('processPayments', {allSessionPayment}); 
+
+}
+
+async function updateSpecClass(req, res){
+    let currentclassname = req.body.currentclassname;          
+    let currentStartTime = req.body.currentStartTime;
+    let currentRoom = req.body.currentRoom;
+    let newname = req.body.newName; 
+    let newdescription = req.body.newDescription; 
+    let newdate = req.body.newDate; 
+    let newstarttime = req.body.newStartTime; 
+    let newendtime = req.body.newEndTime; 
+    let newroomtype = req.body.newroomtype;
+    let newtrainer = req.body.newtrainer; 
+
+    console.log(currentRoom); 
+    console.log(newroomtype);
+    newtrainer = newtrainer.split(" "); 
+
+    if(newname != ""){
+        await db.query(`UPDATE class SET classname = '${newname}' WHERE classname = '${currentclassname}'`); 
+    }
+    if(newdescription != ""){
+        await db.query(`UPDATE class SET description = '${newdescription}' WHERE classname = '${currentclassname}'`); 
+    }
+    if(newdate != null){
+        await db.query(`UPDATE class SET dateofclass = '${newdate}' WHERE classname = '${currentclassname}'`); 
+    }
+    if(newstarttime != ""){
+        await db.query(`UPDATE class SET starttime = '${newstarttime}' WHERE classname = '${currentclassname}'`); 
+    }
+    if(newendtime != ""){
+        await db.query(`UPDATE class SET endtime = '${newendtime}' WHERE classname = '${currentclassname}'`); 
+    }
+    console.log(newroomtype != currentRoom);
+    if(newroomtype != currentRoom){
+        const roomIDResult = await db.query(`SELECT roomid FROM rooms WHERE roomtype = '${newroomtype}'`); 
+        const roomID = roomIDResult.rows[0].roomid; 
+
+        const duplicateRoom = await db.query(`SELECT * FROM class WHERE roomid = ${roomID} AND starttime = '${currentStartTime}'`); 
+        console.log(duplicateRoom);
+        if(duplicateRoom.rowCount != 0){
+            res.status(500).end();
+        }else{
+            const currentClass = await db.query(`SELECT * from class WHERE classname = '${currentclassname}'`); 
+
+            let date = currentClass.rows[0].dateofclass; 
+            const description = currentClass.rows[0].description;
+            const starttime = currentClass.rows[0].starttime; 
+            const endtime = currentClass.rows[0].endtime; 
+            const duration = currentClass.rows[0].duration; 
+            const trainerID = currentClass.rows[0].trainerid; 
+
+            date = date.toISOString();
+            date = date.toString().split("T"); 
+            date = date[0];
+
+            await db.query(`DELETE FROM class WHERE classname = '${currentclassname}' AND dateofclass = '${date}' AND duration = ${duration}`); 
+            await db.query(`INSERT INTO class (className, description, dateOfClass, startTime, endTime, duration, trainerID, roomID)
+            VALUES ('${currentclassname}', '${description}', '${date}', '${starttime}', '${endtime}', ${duration}, ${trainerID}, ${roomID})`);
+
+        }
+    }
+    if(newtrainer != ""){
+        const currentClass = await db.query(`SELECT * from class WHERE classname = '${currentclassname}'`); 
+
+        let date = currentClass.rows[0].dateofclass; 
+        const description = currentClass.rows[0].description;
+        const starttime = currentClass.rows[0].starttime; 
+        const endtime = currentClass.rows[0].endtime; 
+        const duration = currentClass.rows[0].duration; 
+        const roomID = currentClass.rows[0].roomid;
+
+        console.log(newtrainer[0]); 
+        const trainerIDResult = await db.query(`SELECT trainerid FROM trainerInfo WHERE firstname = '${newtrainer[0]}'`);
+        const trainerID = trainerIDResult.rows[0].trainerid; 
+
+        console.log(trainerID);
+
+        date = date.toISOString();
+        date = date.toString().split("T"); 
+        date = date[0];
+
+        console.log(date + description + starttime + endtime + duration + roomID + currentclassname)
+        console.log(trainerID);
+        
+        await db.query(`DELETE FROM class WHERE classname = '${currentclassname}' AND dateofclass = '${date}' AND duration = ${duration}`); 
+        await db.query(`INSERT INTO class (className, description, dateOfClass, startTime, endTime, duration, trainerID, roomID)
+        VALUES ('${currentclassname}', '${description}', '${date}', '${starttime}', '${endtime}', ${duration}, ${trainerID}, ${roomID})`);
+        
+    }
+
+    res.status(200).end();
+}
+
+async function updateMachineCheckup(req, res){
+
+    let machineName = req.body.nameofmachine; 
+
+    let notableIssues = ['Resistance malfunctions disrupt workouts', 
+    'Poorly adjusted seats cause strain.',
+    'Worn cables compromise safety.',
+    'Inaccurate weights mislead progress.',
+    'Lack of maintenance leads to noise.',
+    'Unstable frames risk injury.',
+    'Inadequate padding causes discomfort.',
+    'Improper alignment limits motion.',
+    'Outdated tech restricts exercises.',
+    'Insufficient instruction leads to misuse', 
+    'No notable issues']
+
+    let issueNumber = Math.floor(Math.random() * 11); 
+
+    let currentDate = new Date();
+
+    const pastDateResult = await db.query(`SELECT nextcheckup FROM fitnessequipment WHERE nameofmachine = '${machineName}'`); 
+    const pastDate = pastDateResult.rows[0].nextcheckup; 
+
+    let nextCheckup = new Date(); 
+    nextCheckup.setMonth(nextCheckup.getMonth()+6); 
+    currentDate = currentDate.toISOString();
+    nextCheckup = nextCheckup.toISOString();
+
+    currentDate.toString();
+    currentDate = currentDate.split("T"); 
+    currentDate = currentDate[0];
+
+    nextCheckup.toString();
+    nextCheckup = nextCheckup.split("T"); 
+    nextCheckup = nextCheckup[0];
+
+    await db.query(`UPDATE fitnessequipment SET lastcheckup = '${currentDate}', nextcheckup = '${nextCheckup}', notableissues = '${notableIssues[issueNumber]}' WHERE nameofmachine = '${machineName}'`); 
+    
+    res.status(200).end();
+}
+
+async function addNewClass(req, res){
+    console.log(req.body);
+    let classname = req.body.classInformation.classname; 
+    let classdescription = req.body.classInformation.classdescription; 
+    let classdate = req.body.classInformation.classdate;
+    let classstarttime = req.body.classInformation.classstarttime; 
+    let classendtime = req.body.classInformation.classendtime; 
+    let room = req.body.classInformation.classroom; 
+
+    if(classname === "" || classdate === "" || classstarttime === "" || classendtime === ""){
+        res.status(500).end();
+    }
+
+ 
+    const roomIDResult = await db.query(`SELECT roomid FROM rooms WHERE roomtype = '${room}'`); 
+    const roomID = roomIDResult.rows[0].roomid;
+
+    await db.query(`INSERT INTO class (className, description, dateOfClass, startTime, endTime, duration, trainerID, roomID)
+            VALUES ('${classname}', '${classdescription}', '${classdate}', '${classstarttime}', '${classendtime}', ${60}, ${1}, ${roomID})`);
+
+    res.status(200).end();
 }
