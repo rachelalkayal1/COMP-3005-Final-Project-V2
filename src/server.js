@@ -395,22 +395,6 @@ async function enrollMemberIntoClass(req, res){
     res.status(200).end();
 }
 
-<<<<<<< HEAD
-async function renderManageSchedule(req, res){
-    const trainerIDResult = await db.query(`SELECT trainerID FROM trainers WHERE username = '${username}'`);
-    const trainerID = trainerIDResult.rows[0].trainerid;
-    const results = await db.query(`SELECT * FROM trainerSchedule WHERE trainerID = ${trainerID}`);
-
-    const previousLogs = [];
-
-    previousLogs.push(results.rows);
-    previousLogs[0].forEach((log) => {
-        log.dateofavailability = log.dateofavailability.toString().split("00:00:00").slice(0, -1);
-    })
-    res.render('trainerSchedule', {
-        previousLogs: previousLogs[0]    
-    });
-=======
 async function memberBookSlot(req, res){
     let firstName = req.body.firstName; 
     let lastName = req.body.lastName;
@@ -426,9 +410,20 @@ async function memberBookSlot(req, res){
     await db.query(`DELETE FROM trainerschedule WHERE dateofavailability = '${date}' AND starttime = '${startTime}' AND endtime = '${endTime}'`);
 }
 
-function renderManageSchedule(req, res){
-    res.render('trainerSchedule');
->>>>>>> 6d005db0cadd6de13d45e8af96c7fc6cfba14a7a
+async function renderManageSchedule(req, res){
+    const trainerIDResult = await db.query(`SELECT trainerID FROM trainers WHERE username = '${username}'`);
+    const trainerID = trainerIDResult.rows[0].trainerid;
+    const results = await db.query(`SELECT * FROM trainerSchedule WHERE trainerID = ${trainerID}`);
+
+    const previousLogs = [];
+
+    previousLogs.push(results.rows);
+    previousLogs[0].forEach((log) => {
+        log.dateofavailability = log.dateofavailability.toString().split("00:00:00").slice(0, -1);
+    })
+    res.render('trainerSchedule', {
+        previousLogs: previousLogs[0]    
+    });
 }
 
 async function setTrainerSchedule(req, res){
