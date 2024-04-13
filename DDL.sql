@@ -45,7 +45,8 @@ create TABLE trainerInfo (
     firstName       TEXT NOT NULL,
     lastName        TEXT NOT NULL, 
     dateOfBirth     DATE,
-    trainerID,      INT,
+    sessionFee      FLOAT, 
+    trainerID      INT,
     foreign key (trainerID) references trainers
         on delete set null
 );
@@ -90,10 +91,7 @@ create TABLE memberProgression (
 
 create table rooms (
     roomID     SERIAL  PRIMARY KEY, 
-    roomType   TEXT NOT NULL,
-    dateBooked DATE, 
-    startTime  TIME, 
-    endTime    TIME 
+    roomType  TEXT NOT NULL
 );
 
 create table fitnessEquipment(
@@ -113,7 +111,10 @@ CREATE TABLE class (
     endTime           TIME, 
     duration          INT, 
     trainerID         INT, 
+    roomID            INT,
     foreign key (trainerID) references trainers
+        on delete set null,
+    foreign key (roomID) references rooms
         on delete set null
 );
 
@@ -161,4 +162,13 @@ create table paymentProcess(
 		on delete set null
 );
 
-
+create table sessionPayment(
+    memberFirstName     TEXT NOT NULL, 
+    memberLastName      TEXT NOT NULL, 
+    paymentAmount       FLOAT, 
+    paymentDue          Date, 
+    paid                Boolean, 
+    memberID            INT,
+    foreign key (memberID) references members
+		on delete set null
+)
