@@ -8,13 +8,13 @@ html(lang="en")
         body 
             h2 See All Classes
             div(id="currentClasses")
-                p Upcoming Classes 
-                each gymClass in classes  
-                    p #{gymClass.classname}
-                    p Description: #{gymClass.description}
-                    p Date: #{gymClass.dateofclass}
-                    p Time: #{gymClass.starttime} - #{gymClass.endtime}
-                    p Duration: #{gymClass.duration}
+            p Upcoming Classes 
+            each gymClass in classes  
+                p #{gymClass.classname}
+                p Description: #{gymClass.description}
+                p Date: #{gymClass.dateofclass}
+                p Time: #{gymClass.starttime} - #{gymClass.endtime}
+                p Duration: #{gymClass.duration}
 
             - let number = 0; 
 
