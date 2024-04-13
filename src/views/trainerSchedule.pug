@@ -10,9 +10,6 @@ html(lang="en")
             h2 Manage Schedule 
 
             div(id="scheduleManagement")
-                h4 Schedule: 
-                br
-                br
                 br
                 label(for="dateOfAvailability") Date of Availability:
                 br
@@ -27,12 +24,14 @@ html(lang="en")
                 input(type="time" id="endTime" readonly)
                 br
                 br
-                h4 Duration: 
-                p Start: #{startTime}
-                p End: #{endTime}
-                br
-                br
-                br
                 button(type='submit', id="submit", onclick='submit()') Submit!
+            div(id='previousLogs')
+                h4 Schedule: 
+                each schedule in previousLogs
+                    p _____________________________________
+                    p Date: #{schedule.dateofavailability}
+                    p Start Time: #{schedule.starttime}
+                    p End Time: #{schedule.endtime}
+                    p Duration: 2 hours
         script 
             include trainerSchedule.js

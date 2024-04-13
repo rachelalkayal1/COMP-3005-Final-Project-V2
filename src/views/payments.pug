@@ -1,0 +1,34 @@
+doctype html
+html(lang="en")
+    head 
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title TITLE OF PROJECT 
+
+        body
+            div(id="title")
+                h2 Payments
+
+            div(id="payementAmountClasses")
+                each payment in paymentamount
+                    p#paymentamountclasses Payment Amount For Classes: #{payment.paymentamount}
+
+            div(id="paymentDueClasses")
+                each payment in paymentdue
+                    p#paymentdueclasses Payment Due For Classes : #{payment.paymentdue}
+                    br
+
+            div(id='monthlyFeeAmount')
+                each payment in monthlyFeeAmount
+                    p#monthlyFeeAmount Monthly Fee: #{payment.monthlypayment}
+
+            div(id='monthlyFeeDue')
+                each due in monthlyFeeDue 
+                    p#monthlyFeeDue Monthly Fee Due: #{due.monthlypaymentdue} 
+
+            button(type='submit', id='pay', onclick='makePayment()') Pay For Classes 
+            button(type='submit', id='payForMonthly', onclick='monthlyPayment()') Pay Monthly Fee 
+        
+        script 
+            include payments.js 

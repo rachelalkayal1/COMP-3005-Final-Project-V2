@@ -19,7 +19,3 @@ function submit(){
     submitRequest.send(JSON.stringify(allInfo));
 
 }
-
-// function previousDate(){
-
-// }
