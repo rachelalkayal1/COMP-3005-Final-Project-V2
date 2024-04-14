@@ -5,7 +5,7 @@ Group Members:
   2. Rachel Al Kayal - 101222369
 
 Files Included:
-  1. src (includes the server and all the javascipt and pug files)
+  1. src (includes the server and all the javascipt, css, and pug files)
   2. SQL (includes the DDL and DML files)
 
  Instructions:
