@@ -4,20 +4,27 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title TITLE OF PROJECT 
-
+        title Health and Fitness Club
+        style
+            include dashboard.css
         body 
-            
-
+        
             div(id="welcome-message")
                 h2 Welcome #{user}
             div(id="links")
-                button(id="healthInformation" onclick="document.location='/healthInformation'") Health Information!
-                button(id="exerciseRoutine" onclick="document.location='/exerciseRoutine'") Add Exercise Routine!
-                button(id="fitnessAchievements" onclick="document.location='/fitnessAchievements'") Fitness Achievements! 
-                button(id="classes" onclick="document.location='/allClasses'") Classes!
-                button(id="personalSession" onclick="document.location='/bookASession'") Schedule a Session With a Trainer!
-                button(id="payments" onclick="document.location='/payments'") Payments 
+                button(class="buttons", id="healthInformation" onclick="document.location='/healthInformation'") Health Information!
+                br
+                button(class="buttons", id="exerciseRoutine" onclick="document.location='/exerciseRoutine'") Add Exercise Routine!
+                br
+                button(class="buttons", id="fitnessAchievements" onclick="document.location='/fitnessAchievements'") Fitness Achievements! 
+                br
+                button(class="buttons", id="classes" onclick="document.location='/allClasses'") Classes!
+                br
+                button(class="buttons", id="personalSession" onclick="document.location='/bookASession'") Schedule a Session With a Trainer!
+                br
+                button(class="buttons", id="payments" onclick="document.location='/payments'") Payments 
+
+
 
 
 

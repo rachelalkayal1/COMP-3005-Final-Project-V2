@@ -35,7 +35,7 @@ app.get("/allClasses", renderClassPage);
 app.get("/bookASession", renderPrivateSession);
 app.get("/healthInformation", renderHealthInformation);
 app.get("/roomsPage", renderRoomPage); 
-app.get("/processPayments", renderPaymentPage);
+app.get("/processPayments", renderPaymentPageAdmin);
 app.get("/equipmentPage", renderEquipmentPage); 
 app.get("/updateClasses", renderUpdateClass); 
 app.post("/changeClass", updateSpecClass);
@@ -44,6 +44,7 @@ app.post("/addMember", addNewMember);
 app.post("/enrollMemberIntoClass", enrollMemberIntoClass); 
 app.post("/updateWeight", updateWeight);
 app.post("/updateHeight", updateHeight);
+app.post("/updateGoalWeight", updateGoalWeight);
 app.post("/memberBookSlot", memberBookSlot); 
 app.post("/addNewClass", addNewClass);
 app.post("/:username", validateLogin);
@@ -173,6 +174,7 @@ async function updateWeight(req, res) {
     const memberID = memberIDResult.rows[0].memberid;
 
     await db.query(`UPDATE memberInfo SET memberWeight = ${newWeight} WHERE memberID = ${memberID}`);
+    await db.query(`UPDATE memberGoals SET currentWeight = ${newWeight} WHERE memberID = ${memberID}`);
 
     res.sendStatus(200).end();
 }
@@ -208,7 +210,6 @@ async function renderExercisePage (req, res){
 }
 
 async function submitExerciseRoutine(req, res) {
-    console.log("hello");
     let dateOfLift = req.body.dateOfLift;
     let nameOfLift = req.body.nameOfLift;
     let formOfCardio = req.body.formOfCardio;
@@ -306,8 +307,10 @@ async function renderClassPage (req, res) {
 
     }
     
-    
-    classes[0].dateofclass = classes[0].dateofclass.toString().split("00:00:00").slice(0, -1);   
+    classes.forEach((date) =>{ 
+        date.dateofclass = date.dateofclass.toString().split("00:00:00").slice(0, -1);
+    });
+   // classes[0].dateofclass = classes[0].dateofclass.toString().split("00:00:00").slice(0, -1);   
     res.render('classes', {allClasses, classes}); 
 
     
@@ -331,16 +334,10 @@ async function renderPrivateSession(req, res) {
     }
 
     const memberClassesResult = await db.query(`SELECT * FROM privatesession WHERE memberid = ${memberID}`); 
-    const trainersResult = await db.query(`SELECT DISTINCT *
-    FROM (
-        SELECT *
-        FROM privatesession
-        WHERE memberid = ${memberID}
-    ) AS ps JOIN trainerInfo ON trainerInfo.trainerid IN (
-        SELECT trainerid
-        FROM privatesession
-        WHERE memberid = ${memberID}
-    );`); 
+    const trainersResult = await db.query(`SELECT session.*, trainer.*
+    FROM privatesession session
+    JOIN trainerInfo trainer ON session.trainerid = trainer.trainerid
+    WHERE session.memberid = ${memberID};`); 
     let memberClasses = trainersResult.rows; 
 
     memberClasses.forEach((date) => {
@@ -353,7 +350,6 @@ async function renderPrivateSession(req, res) {
         });
     });
 
-    
     res.render('bookASession', {trainerSchedules, memberClasses});
 }
 
@@ -368,7 +364,6 @@ async function addNewProgression(req, res) {
    
     //if entry already exists in database and we need to add instead of updating
     const update = await db.query(`SELECT * FROM memberProgression WHERE memberID = ${memberID} AND nameOfLift = '${nameLift}'`); 
-    console.log(update.rows);
     if(update.rows.length != 0){ 
         const lastWeightResult = await db.query(`SELECT currentweight FROM memberProgression WHERE memberID = ${memberID} AND nameOfLift = '${nameLift}'`);
         const lastWeightRecorded = lastWeightResult.rows[0].currentweight; 
@@ -382,7 +377,6 @@ async function addNewProgression(req, res) {
 async function enrollMemberIntoClass(req, res){
 
     let className = req.body.currentClassName; 
-    console.log(className);
     const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
     const memberID = memberIDResult.rows[0].memberid;
 
@@ -393,7 +387,8 @@ async function enrollMemberIntoClass(req, res){
     const firstname = memberInfoResult.rows[0].firstname; 
     const lastname = memberInfoResult.rows[0].lastname; 
 
-    await db.query(`INSERT INTO classMembers (memberFirstName, memberLastName, classID, memberID) VALUES ('${firstname}', '${lastname}', ${classID}, ${memberID})`); 
+    await db.query(`INSERT INTO classMembers (memberFirstName, memberLastName, classID, memberID) VALUES ('${firstname}', '${lastname}', ${classID}, ${memberID})`);
+    await db.query(`UPDATE sessionPayment SET paymentAmount = paymentAmount + 20 WHERE memberid = ${memberID}`); 
 
     res.status(200).end();
 }
@@ -494,7 +489,7 @@ async function renderEquipmentPage(req, res){
     res.render('manageEquipment', {equipment}); 
 }
 
-async function renderPaymentPage(req, res){
+async function renderPaymentPageAdmin(req, res){
 
     const allSessionPaymentsResult = await db.query(`SELECT * FROM sessionPayment`); 
     const allSessionPayment = allSessionPaymentsResult.rows; 
@@ -515,8 +510,6 @@ async function updateSpecClass(req, res){
     let newroomtype = req.body.newroomtype;
     let newtrainer = req.body.newtrainer; 
 
-    console.log(currentRoom); 
-    console.log(newroomtype);
     newtrainer = newtrainer.split(" "); 
 
     if(newname != ""){
@@ -534,13 +527,12 @@ async function updateSpecClass(req, res){
     if(newendtime != ""){
         await db.query(`UPDATE class SET endtime = '${newendtime}' WHERE classname = '${currentclassname}'`); 
     }
-    console.log(newroomtype != currentRoom);
     if(newroomtype != currentRoom){
         const roomIDResult = await db.query(`SELECT roomid FROM rooms WHERE roomtype = '${newroomtype}'`); 
         const roomID = roomIDResult.rows[0].roomid; 
 
         const duplicateRoom = await db.query(`SELECT * FROM class WHERE roomid = ${roomID} AND starttime = '${currentStartTime}'`); 
-        console.log(duplicateRoom);
+
         if(duplicateRoom.rowCount != 0){
             res.status(500).end();
         }else{
@@ -572,19 +564,15 @@ async function updateSpecClass(req, res){
         const endtime = currentClass.rows[0].endtime; 
         const duration = currentClass.rows[0].duration; 
         const roomID = currentClass.rows[0].roomid;
-
-        console.log(newtrainer[0]); 
+ 
         const trainerIDResult = await db.query(`SELECT trainerid FROM trainerInfo WHERE firstname = '${newtrainer[0]}'`);
         const trainerID = trainerIDResult.rows[0].trainerid; 
 
-        console.log(trainerID);
 
         date = date.toISOString();
         date = date.toString().split("T"); 
         date = date[0];
 
-        console.log(date + description + starttime + endtime + duration + roomID + currentclassname)
-        console.log(trainerID);
         
         await db.query(`DELETE FROM class WHERE classname = '${currentclassname}' AND dateofclass = '${date}' AND duration = ${duration}`); 
         await db.query(`INSERT INTO class (className, description, dateOfClass, startTime, endTime, duration, trainerID, roomID)
@@ -637,7 +625,6 @@ async function updateMachineCheckup(req, res){
 }
 
 async function addNewClass(req, res){
-    console.log(req.body);
     let classname = req.body.classInformation.classname; 
     let classdescription = req.body.classInformation.classdescription; 
     let classdate = req.body.classInformation.classdate;
@@ -739,5 +726,17 @@ async function monthlyPayment(req, res){
     await db.query(`UPDATE sessionPayment SET paidformonthly = true WHERE monthlypayment = 0 AND memberID = ${memberID}`);
 
     res.status(200).json({ message: "Payment made successful" });
+
+}
+
+async function updateGoalWeight(req, res){
+    let newgoal = req.body.newgoal; 
+    
+    const memberIDResult = await db.query(`SELECT memberID FROM members WHERE username = '${username}'`);
+    const memberID = memberIDResult.rows[0].memberid;
+
+    await db.query(`UPDATE memberGoals SET goalweight = ${newgoal} WHERE memberID = ${memberID}`); 
+
+    res.status(200).end();
 
 }

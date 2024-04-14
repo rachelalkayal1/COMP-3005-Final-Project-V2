@@ -4,7 +4,10 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title TITLE OF PROJECT 
+        title Health and Fitness Club  
+        style    
+            include dashboard.css
+    
 
         body 
             
@@ -12,7 +15,8 @@ html(lang="en")
             div(id="welcome-message")
                 h2 Welcome #{user} (Admin)
             div(id="links")
-                button(id="manageRooms" onclick="document.location='/roomsPage'") Manage Rooms!
-                button(id="manageEquipment" onclick="document.location='/equipmentPage'") Manage Equipment!
-                button(id="updateClassSchedule" onclick="document.location='/updateClasses'") Update Class! 
-                button(id="payment" onclick="document.location='/processPayments'") Process Member Payments 
+                button(class="buttons", id="manageEquipment" onclick="document.location='/equipmentPage'") Manage Equipment!
+                br
+                button(class="buttons", id="updateClassSchedule" onclick="document.location='/updateClasses'") Update Class! 
+                br
+                button(class="buttons", id="payment" onclick="document.location='/processPayments'") Process Member Payments 

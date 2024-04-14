@@ -4,7 +4,9 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title TITLE OF PROJECT 
+        title Health and Fitness Club 
+        style   
+            include dashboard.css
 
         body 
             
@@ -12,5 +14,6 @@ html(lang="en")
             div(id="welcome-message")
                 h2 Welcome #{user} (Trainer)
             div(id="links")
-                button(id="manageSchedule" onclick="document.location='/trainerSchedule'") Manage Schedule!
-                button(id="viewMember" onclick="document.location='/viewMemberProfile'") View Members Profile!
+                button(class="buttons", id="manageSchedule" onclick="document.location='/trainerSchedule'") Manage Schedule!
+                br
+                button(class="buttons", id="viewMember" onclick="document.location='/viewMemberProfile'") View Members Profile!

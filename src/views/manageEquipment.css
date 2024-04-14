@@ -1,0 +1,13 @@
+body{
+    background-color: aliceblue;
+        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        font-size: 20px;
+}
+
+#submit{
+    background-color: #bed7e8;
+    border-radius:30px;
+    padding: 1%;
+    margin-left: 1%;
+    width: 120px;
+}

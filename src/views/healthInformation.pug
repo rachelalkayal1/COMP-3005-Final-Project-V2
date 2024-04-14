@@ -4,27 +4,29 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-
+        style   
+            include healthInformation.css 
+            
         body 
             h2 Health Information
             br
             div(id="memberInfo")
                 p First Name: #{firstName}
-                br
                 p Last Name: #{lastName}
-                br
                 p Date Of Birth: #{dateOfBirth}
-                br
                 p Weight: #{weight}
-                input(type="number", id="updatedWeight", placeholder="Enter your new weight: ")
-                button(onclick="updateWeight()") Update Weight 
-                br
+                p Medicine: #{medication} 
                 p Height: #{height}
-                span#height
-                input(type="number", id="updatedHeight", placeholder="Enter your new height: ")
-                button(onclick="updateHeight()") Update Height
-                br
-                p Medicine: #{medication}
+
+            h4 Add New Information
+            input(class="inputs", type="number", id="updatedWeight", placeholder="Enter your new weight: ")
+            button(class="buttons", onclick="updateWeight()") Update Weight 
+            br
+            span#height
+            input(class="inputs", type="number", id="updatedHeight", placeholder="Enter your new height: ")
+            button(class="buttons", onclick="updateHeight()") Update Height
+            br
+            
 
         script 
             include healthInformation.js

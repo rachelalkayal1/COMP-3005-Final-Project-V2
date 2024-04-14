@@ -43,6 +43,7 @@ INSERT INTO trainerInfo (firstName, lastName, dateOfBirth, sessionFee, trainerID
 VALUES
     ('Mohammad', 'Ali', '1942-01-17', 45, 1),
     ('Mike', 'Tyson', '1966-06-30', 60, 2), 
+    ('Mike', 'Tyson', '1966-06-30' ,60, 2), 
     ('Noel', 'Job', '2003-09-05', 20, 3), 
     ('Joe', 'Frazier', '1944-01-12', 30, 4);
 
@@ -63,12 +64,12 @@ VALUES
     ('2024-03-01', 85.0, 80, 4);
 
 -- Sample data for exerciseRoutine table
-INSERT INTO exerciseRoutine (dateOfExercise, formOfCardio, nameOfLift, caloriesBurned, memberID)
+INSERT INTO exerciseRoutine (dateOfExercise, formOfCardio, nameOfLift, caloriesBurned, duration, memberID)
 VALUES 
-    ('2024-03-01', 'Running', 'Squats', 200, 1),
-    ('2024-03-01', 'Walking', 'Bench Press', 150, 2),
-    ('2024-03-01', 'Swimming', 'Deadlifts', 300, 3),
-    ('2024-03-01', 'Walking', 'Pull-ups', 100, 4);
+    ('2024-03-01', 'Running', 'Squats', 200, 24, 1),
+    ('2024-03-01', 'Walking', 'Bench Press', 150, 30, 2),
+    ('2024-03-01', 'Swimming', 'Deadlifts', 300, 15, 3),
+    ('2024-03-01', 'Walking', 'Pull-ups', 100, 10, 4);
 
 -- Sample data for memberProgression table
 INSERT INTO memberProgression (dateOfLift, nameOfLift, currentWeight, originalWeight, memberID)
@@ -139,9 +140,10 @@ VALUES
     ('Julia', 'Johnson', 120.0, '2024-04-05', 3),
     ('Jack', 'Black', 150.0, '2024-04-07', 4);
 
-INSERT INTO sessionPayment (memberFirstName, memberLastName, paymentAmount, paymentDue, paid, memberID)
+
+INSERT INTO sessionPayment (memberFirstName, memberLastName, paymentAmount, paymentDue, paidForClasses, paidForMonthly, monthlyPayment, monthlyPaymentDue, memberID)
 VALUES 
-    ('Sherif', 'Bedeir Hussein', 90, '2024-04-28', TRUE, 1),
-    ('Moufid', 'Al Kayal', 120, '2024-04-28', FALSE, 2),
-    ('Julia', 'Johnson', 40, '2024-04-28', FALSE, 3),
-    ('Jack', 'Black', 60, '2024-04-28', TRUE, 4);
+    ('Sherif', 'Bedeir Hussein', 90, '2024-04-28', FALSE, FALSE, 69.99, '2024-05-28', 1),
+    ('Moufid', 'Al Kayal', 120, '2024-04-28', FALSE, FALSE, 69.99, '2024-05-28', 2),
+    ('Julia', 'Johnson', 40, '2024-04-28', FALSE, FALSE, 69.99, '2024-05-28', 3),
+    ('Jack', 'Black', 60, '2024-04-28', FALSE, FALSE, 69.99, '2024-05-28', 4);

@@ -4,14 +4,16 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-
+        style  
+            include bookASession.css
         body
-            h2 Book a Private Session
 
             - let number = 0; 
-            div(id="trainersSchedules")
+            div(class="column right", id="trainersSchedules")
+                h2 Book a Private Session
+
                 each trainer in trainerSchedules
-                    p ___________________________________________
+                    p ______________________
                     p(id="trainerName") Trainer: #{trainer.trainerFirst} #{trainer.trainerLast}
                     p(id="sessionFee") Session Fee: $#{trainer.trainerFee}
                     p Times Available to Book 
@@ -21,10 +23,13 @@ html(lang="en")
                         p(id="end" + number) End Time: #{time.endtime}
                         button(id="bookSlot" onclick='memberBookSlot(' + number + ')') Book Slot
                         - number = number + 1 
-            div(id="upcomingSessions")
+            div(class="column middle")
+                p             
+                p              
+            div(class="column left", id="upcomingSessions")
                 h2 Upcoming Sessions
                 each upcomingClass in memberClasses 
-                    p __________________________________________
+                    p _______________________________
                     h3 Session with #{upcomingClass.firstname} #{upcomingClass.lastname}
                     p Date: #{upcomingClass.sessiondate} 
                     p Start Time: #{upcomingClass.sessiontime}

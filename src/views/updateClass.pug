@@ -4,7 +4,7 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title TITLE OF PROJECT 
+ 
         style 
             include updateClass.css
 
@@ -12,7 +12,7 @@ html(lang="en")
             h2 Update Classes 
 
         - let number = 0 
-        div(id = "allClasses")
+        div(class="column left", id = "allClasses")
             p All Classes
             each currentClass in allClasses  
                 div(id="currentClass" + number)
@@ -48,7 +48,10 @@ html(lang="en")
                     button(id="submit" onclick="changeClass(" + number + ")") Commit changes
                 - number = number + 1 
 
-        div(id="addClass")
+        div(class="column middle")
+            p           
+            p           
+        div(class="column right" id="addClass")
             h4 Add a Class! 
             input(type="text", id="newclassname", placeholder="New Class Name")
             input(type="text", id="newclassdescription", placeholder="Description of Class (Optional)")

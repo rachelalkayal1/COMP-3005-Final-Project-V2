@@ -4,11 +4,12 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-
+        style   
+            include exerciseRoutine.css 
         body 
             h2 Exercise Routine
             br
-            div(id="exerciseInfo")
+            div(class="column leeft", id="exerciseInfo")
                 p Enter Date Of Lift: #{dateOfLift}
                 input(type="date", id="dateOfLift", name="dateOfLift", placeholder="Enter Date of Lift")
                 br
@@ -33,11 +34,15 @@ html(lang="en")
                 br
                 br
                 button(onclick="submit()") Submit!
-                //-button(onclick="previousDate") Show Result Of Different Day
-                //- p Calories Burned: #{caloriesBurned}
-            div(id='previousLogs')
+
+            div(class="column middle")
+                p 
+                p 
+                p 
+            div(class="column right", id='previousLogs')
+                h4 Previous Exercise Logs 
                 each routine in previousLogs
-                    p _____________________________________
+                    p ________________________________
                     p Date: #{routine.dateofexercise}
                     p Name Of Lift: #{routine.nameoflift}
                     p Cardio: #{routine.formofcardio}

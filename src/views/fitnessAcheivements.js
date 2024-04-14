@@ -32,3 +32,19 @@ function addNewProgression(){
         addRequest.send(JSON.stringify(liftInformation))
 
 }
+
+function addNewGoalWeight(){
+    let newgoal = document.getElementById("newgoalweight").value; 
+
+    let goalRequest = new XMLHttpRequest(); 
+
+    goalRequest.open("POST", "/updateGoalWeight", true);
+    goalRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    goalRequest.onreadystatechange = function () {
+        if (goalRequest.readyState === 4 && goalRequest.status === 200) {
+            window.location.reload();
+        }
+    };
+    
+    goalRequest.send(JSON.stringify({newgoal}));
+}

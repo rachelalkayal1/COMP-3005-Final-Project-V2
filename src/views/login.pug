@@ -4,13 +4,15 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title TITLE OF PROJECT 
-        //- style 
-            //- include login.css
+        title Health and Fitness Club
+        style 
+            include login.css
 
         body 
-            h2 Welcome to health 
+            
             div(id="login")
+                h2 Welcome to Health and Fitness Club
+                h1(id="design")
             legend Enter your Login Information 
             input(type="text" id="username" placeholder="Enter Username")
             br
@@ -20,9 +22,8 @@ html(lang="en")
             p(id="userError")
             p(id="passError")
             p(id="wrongpass")
-            button(type='submit', id="login", onclick='loginInfo()') Login!
-
+            button(type='submit', id="loginbutton", onclick='loginInfo()') Login!       
+            p If you don't have an account, 
             button(type='button', id='newUser', onclick='signupPage()') Create New User
         script 
             include login.js
-            //- include signup.js

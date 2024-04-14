@@ -4,10 +4,6 @@ body{
         font-size: 20px;
 }
 
-.editing{
-    display: none; 
-}
-
 .column {
     float: left;
 }

@@ -8,31 +8,37 @@ html(lang="en")
         body 
             h2 Fitness Achievements 
 
-            div(id='weightSection')
+            div(class="column left", id='weightSection')
                 h3 Weight Goals
                 p Current Weight :  #{weight.currentWeight} kg
                 p Goal Weight : #{weight.goalWeight} kg
                 if weight.currentWeight > weight.goalWeight 
                     p Goal is to lose: #{weight.currentWeight - weight.goalWeight} kg
                 else 
-                    p Goal is to gain: #{weight.goalWeight - weight.currentWeight} kg
-                p ADD SECTION WHERE THEY CAB CHANGE THEIR GOALS [PLEASE LOBE YOU SO MUCH YOUSSF IS CUTE ] 
+                    p Goal is to gain: #{weight.goalWeight - weight.currentWeight} kg 
+
+                label(for="newgoalweight") Add A New Goal Weight 
+                input(type="number" id="newgoalweight") 
+                button(id="submit" onclick="addNewGoalWeight()") Submit
+
             
-            div(id='liftSection')
+            div(class="column middle", id='liftSection')
                 h3 Lifting Goals 
-                p ________________________________________________
+                p _______________________________________
                 each lift in allLifts 
                     p #{lift.nameoflift}
                     p Personal Record: #{lift.currentweight} lbs
                     p Date of Personal Record: #{lift.dateoflift}
                     p Last record: #{lift.originalweight} lbs
-                    p ________________________________________________
+                    p _______________________________________
 
                 button(id="newPR" onclick="toggleAdd()") Add New Progression
 
-            div(id='addingNewPR')
+            div(class="column right", id='addingNewPR')
                 input(type="text" id="nameOfLift" placeholder="Enter Name of Lift!")
+                br
                 input(type="date", id="dateoflift", name="dateoflift", placeholder="Enter Date of Lift!")
+                br
                 input(type="number", id="weight" placeholder="Enter Weight!", min="0")
                 button(id="submit" onclick="addNewProgression()") Submit
 

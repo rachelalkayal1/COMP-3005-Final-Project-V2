@@ -4,22 +4,18 @@ body{
         font-size: 20px;
 }
 
-.editing{
-    display: none; 
-}
-
 .column {
     float: left;
 }
 
 .left {
     font-family: Georgia, serif;
-    width: 25%;
+    width: 40%;
     color:rgb(96, 128, 96);
 }
 
 .middle {
-    width: 30%;
+    width: 40%;
     font-family: Georgia, serif;
   
 }

@@ -4,7 +4,8 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title TITLE OF PROJECT 
+        style 
+            include viewMemberProfile.css
 
         body 
             p Owed Payments
@@ -13,4 +14,5 @@ html(lang="en")
                     p _____________________________________
                     p(id="owedMemberName") #{payment.memberfirstname} #{payment.memberlastname}
                     p(id="amountowed") Amount Owed: #{payment.paymentamount}
-                    p(id="paid") Paid: #{payment.paid}
+                    p(id="paid") Paid for Classes: #{payment.paidforclasses}
+                    p Paid for Monthly Fee: #{payment.paidformonthly}

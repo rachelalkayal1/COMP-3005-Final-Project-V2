@@ -9,6 +9,13 @@ function submit(){
     let schedulingInfo = {dateOfAvailability : dateOfAvailability, startTime : startTime, endTime : endTime}
     document.getElementById('endTime').value = endTime;
 
+
+    // let date = new Date(dateOfAvailability);
+    // date = date.toISOString(); 
+    // date.toString();
+    // date = date.split("T"); 
+    // date = date[0];
+
     let submitRequest = new XMLHttpRequest();
     submitRequest.open("POST", "/setSchedule", true);
     submitRequest.setRequestHeader("Content-Type", "application/json");

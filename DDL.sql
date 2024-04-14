@@ -74,6 +74,7 @@ create TABLE exerciseRoutine (
     formOfCardio    TEXT NOT NULL, 
     nameOfLift      TEXT NOT NULL, 
     caloriesBurned  FLOAT,
+    duration        FLOAT,
     memberID        INT, 
     foreign key (memberID) references members
         on delete set null
@@ -171,4 +172,13 @@ create table sessionPayment(
     memberID            INT,
     foreign key (memberID) references members
 		on delete set null
+    paidForClasses      Boolean, 
+    paidForMonthly      Boolean,
+    monthlyPayment      FLOAT,
+    monthlyPaymentDue   Date,
+    memberID            INT,
+    foreign key (memberID) references members
+        on delete set null
 )
+
+
