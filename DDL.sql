@@ -1,19 +1,19 @@
 create TABLE admins (
     staffID        SERIAL PRIMARY KEY, 
-    username       TEXT NOT NULL, 
-    userPassword   TEXT NOT NULL    
+    username       TEXT NOT NULL UNIQUE, 
+    userPassword   TEXT NOT NULL UNIQUE    
 );
 
 create TABLE members (
     memberID        SERIAL PRIMARY KEY, 
-    username        TEXT NOT NULL, 
-    userPassword    TEXT NOT NULL
+    username        TEXT NOT NULL UNIQUE, 
+    userPassword    TEXT NOT NULL UNIQUE
 );
 
 create TABLE trainers (
     trainerID       SERIAL PRIMARY KEY, 
-    username        TEXT NOT NULL,
-    userPassword    TEXT NOT NULL,
+    username        TEXT NOT NULL UNIQUE,
+    userPassword    TEXT NOT NULL UNIQUE,
     memberID        INT,
     foreign key (memberID) references members
         on delete set null
@@ -168,10 +168,6 @@ create table sessionPayment(
     memberLastName      TEXT NOT NULL, 
     paymentAmount       FLOAT, 
     paymentDue          Date, 
-    paid                Boolean, 
-    memberID            INT,
-    foreign key (memberID) references members
-		on delete set null
     paidForClasses      Boolean, 
     paidForMonthly      Boolean,
     monthlyPayment      FLOAT,
