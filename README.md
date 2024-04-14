@@ -13,4 +13,5 @@ Files Included:
    2. Then run this command: npm install express
    3. Then run this final install command: npm install pug
    4. Finally run: node server.js
-   5. When redirected to the website, navigate through it to test
+   5. Paste this link into your browser: http://localhost:3000/
+   6. When redirected to the website, navigate through it to test
